@@ -50,13 +50,15 @@ def score_topic(
 
 def is_allowed(
     topic,
+    summary,
     domain="programming",
-    min_score=1
+    min_score=2
 ):
 
     return (
-        score_topic(
+        calculate_relevance(
             topic,
+            summary,
             domain
         ) >= min_score
     )
@@ -66,6 +68,9 @@ def score_summary(
     summary,
     domain="programming"
 ):
+
+    if not summary:
+        return 0
 
     domains = load_domains()
 

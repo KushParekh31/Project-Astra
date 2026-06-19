@@ -2,6 +2,7 @@ import json
 import os
 
 from astra.domain_filter import is_allowed
+from astra.similarity import find_most_similar
 
 QUEUE_FILE = "data/curiosity/queue.json"
 VISITED_FILE = "data/curiosity/visited.json"
@@ -153,3 +154,36 @@ def clear_queue():
 def clear_visited():
 
     save_visited([])
+    
+def find_topic(query):
+
+    graph = get_graph()
+
+    if not graph:
+        return None
+
+    topics = list(
+        graph.keys()
+    )
+
+    best_topic, score = (
+        find_most_similar(
+            query,
+            topics
+        )
+    )
+
+    print(
+        f"[DEBUG] "
+        f"Best Topic: {best_topic}"
+    )
+
+    print(
+        f"[DEBUG] "
+        f"Score: {score:.3f}"
+    )
+
+    if score < 0.15:
+        return None
+
+    return graph[best_topic]

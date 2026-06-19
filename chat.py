@@ -9,6 +9,7 @@ from astra.knowledge import (
     learn_sentence,
     find_best_match
 )
+from astra.curiosity import find_topic
 
 device = torch.device("cpu")
 
@@ -46,25 +47,40 @@ while True:
 
     sentence = input("You: ").strip()
 
-    # Exit
+    # =========================
+    # EXIT
+    # =========================
+
     if sentence.lower() == "quit":
-        print(f"{bot_name}: Goodbye!")
+
+        print(
+            f"{bot_name}: Goodbye!"
+        )
+
         break
 
     # =========================
-    # LEARNING MODE
+    # KEY-VALUE LEARNING
     # =========================
+
     if sentence.lower().startswith("learn:"):
 
         try:
+
             data = sentence[6:].strip()
 
-            key, value = data.split("=", 1)
+            key, value = data.split(
+                "=",
+                1
+            )
 
             key = key.strip()
             value = value.strip()
 
-            learn(key, value)
+            learn(
+                key,
+                value
+            )
 
             print(
                 f"{bot_name}: Learned '{key}'."
@@ -79,7 +95,9 @@ while True:
 
         continue
 
-    # Learn complete sentences
+    # =========================
+    # SENTENCE LEARNING
+    # =========================
 
     if sentence.lower().startswith(
         "learn sentence:"
@@ -96,28 +114,25 @@ while True:
         )
 
         continue
-    
-    # Search knowledge
-
-    answer = find_best_match(sentence)
-    
-    if answer:
-    
-        print(
-            f"{bot_name}: {answer}"
-        )
-    
-        continue
 
     # =========================
-    # MEMORY RECALL
+    # MEMORY LOOKUP
     # =========================
-    if sentence.lower().startswith("what is"):
+
+    if sentence.lower().startswith(
+        "what is"
+    ):
 
         key = (
             sentence.lower()
-            .replace("what is", "")
-            .replace("?", "")
+            .replace(
+                "what is",
+                ""
+            )
+            .replace(
+                "?",
+                ""
+            )
             .strip()
         )
 
@@ -125,22 +140,71 @@ while True:
 
         if answer:
 
-            print(f"{bot_name}: {answer}")
+            print(
+                f"{bot_name}: {answer}"
+            )
+
             continue
+
+    # =========================
+    # KNOWLEDGE BASE SEARCH
+    # =========================
+
+    answer = find_best_match(
+        sentence
+    )
+
+    if answer:
+
+        print(
+            f"{bot_name}: {answer}"
+        )
+
+        continue
+
+    # =========================
+    # CURIOSITY GRAPH SEARCH
+    # =========================
+
+    topic_data = find_topic(
+        sentence
+    )
+
+    if topic_data:
+
+        print()
+
+        print(
+            f"{bot_name}:"
+        )
+
+        print(
+            topic_data["summary"]
+        )
+
+        continue
 
     # =========================
     # AI PREDICTION
     # =========================
-    tokenized_sentence = tokenize(sentence)
+
+    tokenized_sentence = tokenize(
+        sentence
+    )
 
     X = bag_of_words(
         tokenized_sentence,
         all_words
     )
 
-    X = X.reshape(1, X.shape[0])
+    X = X.reshape(
+        1,
+        X.shape[0]
+    )
 
-    X = torch.from_numpy(X).to(device)
+    X = torch.from_numpy(
+        X
+    ).to(device)
 
     output = model(X)
 
@@ -149,20 +213,28 @@ while True:
         dim=1
     )
 
-    tag = tags[predicted.item()]
+    tag = tags[
+        predicted.item()
+    ]
 
     probs = torch.softmax(
         output,
         dim=1
     )
 
-    prob = probs[0][predicted.item()]
+    prob = probs[0][
+        predicted.item()
+    ]
 
     if prob.item() > 0.75:
 
-        for intent in intents["intents"]:
+        for intent in intents[
+            "intents"
+        ]:
 
-            if tag == intent["tag"]:
+            if tag == intent[
+                "tag"
+            ]:
 
                 print(
                     f"{bot_name}: "
@@ -174,5 +246,6 @@ while True:
     else:
 
         print(
-            f"{bot_name}: I don't understand."
+            f"{bot_name}: "
+            "I don't know that yet."
         )

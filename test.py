@@ -1,22 +1,7 @@
-from astra.wiki_research import get_summary
-from astra.domain_filter import *
+from astra.curiosity import *
 
-topics = [
-    "CPython",
-    "Guido van Rossum",
-    "Pythonidae",
-    "Python (missile)"
-]
+topic = find_topic(
+    "Python (programming language)"
+)
 
-for topic in topics:
-
-    summary = get_summary(topic)
-
-    score = calculate_relevance(
-        topic,
-        summary
-    )
-
-    print()
-    print(topic)
-    print("Score:", score)
+print(topic)
