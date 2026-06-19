@@ -1,16 +1,18 @@
 import json
 import random
-
 import torch
 
 from astra.model import NeuralNet
 from astra.tokenizer import bag_of_words, tokenize
+from astra.memory import learn, recall
 
 device = torch.device("cpu")
 
+# Load intents
 with open("data/intents.json", "r") as json_data:
     intents = json.load(json_data)
 
+# Load trained model
 FILE = "model.pth"
 data = torch.load(FILE)
 
@@ -38,24 +40,80 @@ print(f"{bot_name}: Hello! Type 'quit' to exit.")
 
 while True:
 
-    sentence = input("You: ")
+    sentence = input("You: ").strip()
 
+    # Exit
     if sentence.lower() == "quit":
+        print(f"{bot_name}: Goodbye!")
         break
 
-    sentence = tokenize(sentence)
+    # =========================
+    # LEARNING MODE
+    # =========================
+    if sentence.lower().startswith("learn:"):
+
+        try:
+            data = sentence[6:].strip()
+
+            key, value = data.split("=", 1)
+
+            key = key.strip()
+            value = value.strip()
+
+            learn(key, value)
+
+            print(
+                f"{bot_name}: Learned '{key}'."
+            )
+
+        except ValueError:
+
+            print(
+                f"{bot_name}: Use format -> "
+                "learn: key = value"
+            )
+
+        continue
+
+    # =========================
+    # MEMORY RECALL
+    # =========================
+    if sentence.lower().startswith("what is"):
+
+        key = (
+            sentence.lower()
+            .replace("what is", "")
+            .replace("?", "")
+            .strip()
+        )
+
+        answer = recall(key)
+
+        if answer:
+
+            print(f"{bot_name}: {answer}")
+            continue
+
+    # =========================
+    # AI PREDICTION
+    # =========================
+    tokenized_sentence = tokenize(sentence)
 
     X = bag_of_words(
-        sentence,
+        tokenized_sentence,
         all_words
     )
 
     X = X.reshape(1, X.shape[0])
+
     X = torch.from_numpy(X).to(device)
 
     output = model(X)
 
-    _, predicted = torch.max(output, dim=1)
+    _, predicted = torch.max(
+        output,
+        dim=1
+    )
 
     tag = tags[predicted.item()]
 
@@ -73,13 +131,14 @@ while True:
             if tag == intent["tag"]:
 
                 print(
-                    f"{bot_name}:",
-                    random.choice(
-                        intent["responses"]
-                    )
+                    f"{bot_name}: "
+                    f"{random.choice(intent['responses'])}"
                 )
 
+                break
+
     else:
+
         print(
             f"{bot_name}: I don't understand."
-        )   
+        )
