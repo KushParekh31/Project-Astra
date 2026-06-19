@@ -2,27 +2,49 @@
   "intents": [
     {
       "tag": "greeting",
-      "patterns": ["hello", "hi", "hey"],
-      "responses": ["Hello!", "Hi there!", "Greetings!"]
+      "patterns": [
+        "hello",
+        "hi",
+        "hey",
+        "hello astra",
+        "hi astra",
+        "hey astra",
+        "good morning",
+        "good evening"
+      ],
+      "responses": [
+        "Hello!",
+        "Hi there!",
+        "Greetings!"
+      ]
     },
-
     {
       "tag": "goodbye",
-      "patterns": ["bye", "goodbye", "see you"],
-      "responses": ["Goodbye!", "See you later!"]
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you"
+      ],
+      "responses": [
+        "Goodbye!",
+        "See you later!"
+      ]
     },
-
     {
       "tag": "name",
       "patterns": [
         "what is your name",
-        "who are you"
+        "who are you",
+        "name",
+        "name?",
+        "tell me your name",
+        "your name",
+        "what should i call you"
       ],
       "responses": [
         "I am Astra."
       ]
     },
-
     {
       "tag": "thanks",
       "patterns": [
