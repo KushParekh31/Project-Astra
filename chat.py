@@ -5,6 +5,10 @@ import torch
 from astra.model import NeuralNet
 from astra.tokenizer import bag_of_words, tokenize
 from astra.memory import learn, recall
+from astra.knowledge import (
+    learn_sentence,
+    find_best_match
+)
 
 device = torch.device("cpu")
 
@@ -73,6 +77,36 @@ while True:
                 "learn: key = value"
             )
 
+        continue
+
+    # Learn complete sentences
+
+    if sentence.lower().startswith(
+        "learn sentence:"
+    ):
+
+        fact = sentence[
+            len("learn sentence:")
+        :].strip()
+
+        learn_sentence(fact)
+
+        print(
+            f"{bot_name}: Learned."
+        )
+
+        continue
+    
+    # Search knowledge
+
+    answer = find_best_match(sentence)
+    
+    if answer:
+    
+        print(
+            f"{bot_name}: {answer}"
+        )
+    
         continue
 
     # =========================
