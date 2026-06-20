@@ -4,7 +4,7 @@ Project Astra is an experimental conversational AI built from scratch using Pyth
 
 The primary goal of Project Astra is to explore the foundations of artificial intelligence, including tokenization, intent classification, neural network training, and conversational understanding. As the project evolves, Astra will progress from a simple intent-based chatbot to a more advanced AI system capable of contextual reasoning and intelligent interaction.
 
-**Status:** In Development (v0.1)
+**Status:** In Development (v0.2)
 
 **Technologies:** Python, PyTorch, NumPy, NLTK
 
