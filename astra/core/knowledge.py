@@ -1,8 +1,6 @@
 import json
 import os
 
-from astra.similarity import sentence_similarity
-
 FILE = "knowledge.json"
 
 
@@ -52,7 +50,7 @@ def learn_sentence(sentence):
     return False
 
 
-from astra.similarity import find_most_similar  
+from astra.core.similarity import find_most_similar
 
 
 def find_best_match(question):

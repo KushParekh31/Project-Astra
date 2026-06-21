@@ -2,14 +2,14 @@ import json
 import random
 import torch
 
-from astra.model import NeuralNet
-from astra.tokenizer import bag_of_words, tokenize
-from astra.memory import learn, recall
-from astra.knowledge import (
+from astra.models.neural_net import NeuralNet
+from astra.core.tokenizer import bag_of_words, tokenize
+from astra.core.memory import learn, recall
+from astra.core.knowledge import (
     learn_sentence,
     find_best_match
 )
-from astra.curiosity import find_topic
+from astra.curiosity.engine import find_topic
 
 device = torch.device("cpu")
 

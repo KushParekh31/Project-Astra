@@ -1,8 +1,8 @@
 import json
 import os
 
-from astra.domain_filter import is_allowed
-from astra.similarity import find_most_similar
+from astra.curiosity.domain_filter import is_allowed
+from astra.core.similarity import find_most_similar
 
 QUEUE_FILE = "data/curiosity/queue.json"
 VISITED_FILE = "data/curiosity/visited.json"

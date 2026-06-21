@@ -1,5 +1,5 @@
-from astra.curiosity import *
-from astra.wiki_research import *
+from astra.curiosity.engine import *
+from astra.curiosity.wiki_research import *
 
 topic = input(
     "Starting Topic: "

@@ -4,8 +4,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
-from astra.tokenizer import tokenize, stem, bag_of_words
-from astra.model import NeuralNet
+from astra.core.tokenizer import tokenize, stem, bag_of_words
+from astra.models.neural_net import NeuralNet
 
 # Load intents
 with open("data/intents.json", "r") as f:
