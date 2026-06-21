@@ -281,18 +281,24 @@ class ResearchGui:
 
     def _show_progress(self, result, processed):
         self.status_label.configure(
-            text=f"Learned {processed}: {result['topic']}"
+            text=f"Checked {processed}: {result['topic']}"
         )
 
-        text = (
-            f"[{processed}] {result['topic']}\n"
-            f"Saved: {result['saved']}\n"
-            f"Related topics: {len(result['related'])}\n"
-            f"Accepted into queue: {result['accepted']}\n"
-            f"Rejected: {result['rejected']}\n"
-            f"Keywords: {', '.join(result.get('keywords', []))}\n"
-            "\n"
-        )
+        if result["saved"]:
+            text = (
+                f"[{processed}] {result['topic']}\n"
+                f"Saved: True\n"
+                f"Related topics: {len(result['related'])}\n"
+                f"Accepted into queue: {result['accepted']}\n"
+                f"Rejected: {result['rejected']}\n"
+                f"Keywords: {', '.join(result.get('keywords', []))}\n"
+                "\n"
+            )
+        else:
+            text = (
+                f"[{processed}] {result['topic']}\n"
+                f"Skipped: {result['message']}\n\n"
+            )
 
         self.output.insert("end", text)
         self.output.see("end")
