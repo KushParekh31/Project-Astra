@@ -16,19 +16,47 @@ def load_json(path, default):
     if not os.path.exists(path):
         return default
 
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+
+        if not content:
+            return default
+
+        return json.loads(content)
+
+    except json.JSONDecodeError:
+        print(
+            f"Warning: Could not read JSON from {path}. "
+            "Using default value."
+        )
+        return default
 
 
 def save_json(path, data):
 
-    with open(path, "w", encoding="utf-8") as f:
+    directory = os.path.dirname(path)
+
+    if directory:
+        os.makedirs(
+            directory,
+            exist_ok=True
+        )
+
+    temp_path = f"{path}.tmp"
+
+    with open(temp_path, "w", encoding="utf-8") as f:
         json.dump(
             data,
             f,
             indent=4,
             ensure_ascii=False
         )
+
+    os.replace(
+        temp_path,
+        path
+    )
 
 
 def get_queue():
