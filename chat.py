@@ -10,6 +10,7 @@ from astra.core.knowledge import (
     find_best_match
 )
 from astra.curiosity.engine import find_topic
+from astra.language.grammar import reply_from_fact, reply_from_keywords
 
 device = torch.device("cpu")
 
@@ -141,7 +142,7 @@ while True:
         if answer:
 
             print(
-                f"{bot_name}: {answer}"
+                f"{bot_name}: {reply_from_fact(answer)}"
             )
 
             continue
@@ -157,7 +158,7 @@ while True:
     if answer:
 
         print(
-            f"{bot_name}: {answer}"
+            f"{bot_name}: {reply_from_fact(answer)}"
         )
 
         continue
@@ -179,7 +180,10 @@ while True:
         )
 
         print(
-            topic_data["summary"]
+            reply_from_keywords(
+                sentence,
+                topic_data.get("keywords", [])
+            )
         )
 
         continue

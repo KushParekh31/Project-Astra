@@ -1,9 +1,78 @@
+import time
+
 import requests
 
 HEADERS = {
     "User-Agent":
     "Project-Astra/0.1 (Research Bot; Python)"
 }
+
+DEFAULT_TIMEOUT = 10
+MAX_RETRIES = 3
+
+
+def _sleep_before_retry(response, attempt):
+
+    retry_after = response.headers.get(
+        "Retry-After"
+    )
+
+    if retry_after and retry_after.isdigit():
+        time.sleep(
+            int(retry_after)
+        )
+        return
+
+    time.sleep(
+        attempt + 1
+    )
+
+
+def _get_json(url, params=None):
+
+    for attempt in range(MAX_RETRIES):
+
+        response = requests.get(
+            url,
+            headers=HEADERS,
+            params=params,
+            timeout=DEFAULT_TIMEOUT
+        )
+
+        print("Status:", response.status_code)
+
+        if response.status_code == 429:
+            print(
+                "Rate limited by Wikipedia. "
+                "Waiting before retry..."
+            )
+            _sleep_before_retry(
+                response,
+                attempt
+            )
+            continue
+
+        if not response.ok:
+            print(
+                f"Wikipedia request failed: "
+                f"{response.status_code}"
+            )
+            return None
+
+        try:
+            return response.json()
+        except ValueError:
+            print(
+                "Wikipedia returned a non-JSON response."
+            )
+            return None
+
+    print(
+        "Wikipedia rate limit persisted. "
+        "Try again later or use fewer topics."
+    )
+
+    return None
 
 
 def get_summary(topic):
@@ -15,15 +84,10 @@ def get_summary(topic):
             + topic.replace(" ", "_")
         )
 
-        response = requests.get(
-            url,
-            headers=HEADERS,
-            timeout=10
-        )
+        data = _get_json(url)
 
-        print("Status:", response.status_code)
-
-        data = response.json()
+        if not data:
+            return None
 
         return data.get(
             "extract",
@@ -54,14 +118,13 @@ def get_related_topics(topic):
             "format": "json"
         }
 
-        response = requests.get(
+        data = _get_json(
             url,
-            headers=HEADERS,
-            params=params,
-            timeout=10
+            params=params
         )
 
-        data = response.json()
+        if not data:
+            return []
 
         pages = data["query"]["pages"]
 

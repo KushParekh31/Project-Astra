@@ -1,77 +1,42 @@
-from astra.curiosity.engine import *
-from astra.curiosity.wiki_research import *
+from astra.curiosity.engine import research_topic_loop
+from astra.curiosity.wiki_research import get_related_topics, get_summary
+
 
 topic = input(
     "Starting Topic: "
 ).strip()
 
-clear_queue()
-clear_visited()
+limit_text = input(
+    "Max topics to learn this run [10]: "
+).strip()
 
-add_topic(topic)
+max_topics = int(limit_text) if limit_text else 10
 
-while True:
+delay_text = input(
+    "Delay seconds between topics [2]: "
+).strip()
 
-    queue = get_queue()
+delay_seconds = int(delay_text) if delay_text else 2
 
-    if not queue:
+result = research_topic_loop(
+    topic=topic,
+    get_summary=get_summary,
+    get_related_topics=get_related_topics,
+    reset=True,
+    max_topics=max_topics,
+    delay_seconds=delay_seconds
+)
 
-        print(
-            "Research complete."
-        )
+print()
+print("=" * 60)
+print(result["message"])
+print("Starting Topic:", result["start_topic"])
+print("Processed:", result["processed"])
+print("Remaining Queue:", result["remaining_queue"])
 
-        break
-
-    topic = queue.pop(0)
-
-    save_queue(queue)
-
+for item in result["results"]:
     print()
-    print("=" * 60)
-    print("Researching:", topic)
-
-    summary = get_summary(topic)
-
-    if not summary:
-
-        continue
-
-    related = get_related_topics(
-        topic
-    )
-
-    add_node(
-        topic,
-        summary,
-        related
-    )
-
-    added = enqueue_related_topics(
-    related
-    )
-    
-    print(
-    f"Accepted: {added}"
-    )
-
-    print(
-        f"Rejected: {len(related) - added}"
-    )
-
-    print(
-        f"Queued {added} new topics."
-    )
-    
-    mark_visited(topic)
-
-    print(
-        "Saved:",
-        topic
-    )
-
-    print(
-        "Related Topics:",
-        len(related)
-    )
-
-    break
+    print("Saved:", item["topic"])
+    print("Accepted:", item["accepted"])
+    print("Rejected:", item["rejected"])
+    print("Related Topics:", len(item["related"]))
