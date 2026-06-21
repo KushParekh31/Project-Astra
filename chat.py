@@ -10,7 +10,11 @@ from astra.core.knowledge import (
     find_best_match
 )
 from astra.curiosity.engine import find_topic
-from astra.language.grammar import reply_from_fact, reply_from_keywords
+from astra.language.grammar import (
+    extract_topic_from_question,
+    reply_from_fact,
+    reply_from_keywords
+)
 
 device = torch.device("cpu")
 
@@ -167,8 +171,12 @@ while True:
     # CURIOSITY GRAPH SEARCH
     # =========================
 
-    topic_data = find_topic(
+    topic_query = extract_topic_from_question(
         sentence
+    )
+
+    topic_data = find_topic(
+        topic_query
     )
 
     if topic_data:
@@ -181,7 +189,7 @@ while True:
 
         print(
             reply_from_keywords(
-                sentence,
+                topic_data.get("topic", topic_query),
                 topic_data.get("keywords", [])
             )
         )

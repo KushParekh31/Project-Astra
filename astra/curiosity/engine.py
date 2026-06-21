@@ -395,7 +395,12 @@ def find_topic(query):
     if score < 0.15:
         return None
 
-    return graph[best_topic]
+    topic_data = graph[best_topic]
+
+    return {
+        "topic": best_topic,
+        **topic_data
+    }
 
 
 def find_topic_keywords(query):

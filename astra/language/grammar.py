@@ -1,4 +1,5 @@
 import random
+import re
 
 
 def sentence_case(text):
@@ -50,6 +51,8 @@ def reply_from_fact(fact):
 
 def reply_from_keywords(topic, keywords):
 
+    topic = clean_topic(topic)
+
     if not keywords:
         return (
             f"I know about {topic}, but I do not have "
@@ -57,18 +60,50 @@ def reply_from_keywords(topic, keywords):
         )
 
     keyword_text = ", ".join(
-        keywords[:8]
+        keywords[:6]
     )
 
     templates = [
-        "{topic} is connected with {keywords}.",
-        "When I think about {topic}, the main ideas are {keywords}.",
-        "The key points I learned about {topic} are {keywords}.",
-        "My notes for {topic} focus on {keywords}.",
-        "{topic} mainly relates to {keywords}."
+        "{topic} is mainly about {keywords}.",
+        "I have learned that {topic} relates to {keywords}.",
+        "The important ideas in {topic} are {keywords}.",
+        "For {topic}, I remember these key ideas: {keywords}.",
+        "{topic} connects most strongly to {keywords}."
     ]
 
     return random.choice(templates).format(
         topic=topic,
         keywords=keyword_text
     )
+
+
+def clean_topic(topic):
+
+    topic = topic.strip()
+
+    if not topic:
+        return topic
+
+    return sentence_case(topic)
+
+
+def extract_topic_from_question(text):
+
+    text = text.strip()
+
+    patterns = [
+        r"^(tell me about|tell me|explain|describe|what is|who is|what are|define)\s+",
+        r"\?$"
+    ]
+
+    topic = text
+
+    for pattern in patterns:
+        topic = re.sub(
+            pattern,
+            "",
+            topic,
+            flags=re.IGNORECASE
+        ).strip()
+
+    return topic or text
